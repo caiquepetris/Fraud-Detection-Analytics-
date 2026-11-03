@@ -1,0 +1,42 @@
+Fraud Detection Analytics — Regras de Negócio
+Projeto 4 do portfólio · Rascunho v0.1 para validação
+Os valores numéricos abaixo são parâmetros configuráveis, não definitivos.
+1. Contexto e escopo
+Cenário assumido: uma fintech fictícia que processa transações de cartão e PIX. O sistema não bloqueia nada sozinho; ele analisa, pontua e recomenda, e um analista humano decide.
+Atores
+• Analista de fraude: revisa alertas e decide o desfecho.
+• Gestor de risco: acompanha indicadores e ajusta parâmetros das regras.
+• Sistema: aplica regras e modelo, gera score e alertas.
+• Cliente (fictício): titular das transações analisadas.
+2. Regras de negócio
+Transações
+• RN01. Toda transação deve ter cliente, valor maior que zero, data/hora, canal (cartão/PIX), comerciante, cidade e dispositivo.
+• RN02. Transações são imutáveis depois de registradas; correções geram um novo registro de ajuste.
+Detecção por regras (cada regra soma pontos ao risco)
+• RN03. Valor atípico: valor maior que 5× a média do cliente nos últimos 30 dias.
+• RN04. Rajada: 5 ou mais transações do mesmo cliente em 10 minutos.
+• RN05. Viagem impossível: duas transações em cidades distantes em intervalo menor que o tempo de deslocamento plausível.
+• RN06. Horário atípico: transação de alto valor entre 00h e 05h fora do padrão do cliente.
+• RN07. Dispositivo novo: primeira transação em um dispositivo nunca usado pelo cliente, combinada com valor acima do limite configurado.
+• RN08. Categoria de risco: comerciantes de categorias marcadas como de risco aumentam a pontuação.
+Score e decisão
+• RN09. O score final (0 a 100) combina a pontuação das regras com a probabilidade do modelo de ML.
+• RN10. Faixas: baixo (0–39) aprovada; médio (40–69) vai para fila de revisão; alto (70–100) gera alerta prioritário com recomendação de bloqueio.
+• RN11. Todo score deve registrar os motivos (quais regras e fatores pesaram), para ser explicável.
+Casos e análise
+• RN12. Todo alerta médio ou alto abre um caso com status: aberto → em análise → fraude confirmada / falso positivo / arquivado.
+• RN13. O analista só pode encerrar um caso com justificativa registrada.
+• RN14. Toda mudança de status é auditada (quem, quando, o quê).
+• RN15. Decisões encerradas viram rótulos para reavaliar e retreinar o modelo.
+Indicadores
+• RN16. O gestor acompanha: taxa de fraude, precisão dos alertas, taxa de falso positivo, valor potencialmente evitado e tempo médio de análise.
+Dados
+• RN17. Todos os dados são fictícios e gerados sinteticamente; nenhum dado pessoal real é usado.
+3. Próximas etapas do processo
+1. Validar as regras de negócio: cortar, mudar limites, adicionar.
+2. Requisitos: funcionais, não funcionais (desempenho, segurança, auditoria) e histórias de usuário com critérios de aceite.
+3. Modelagem: casos de uso, DER (cliente, transação, dispositivo, comerciante, alerta, caso, regra, análise) e dicionário de dados.
+4. Banco: criação das tabelas, índices e constraints.
+5. Desenvolvimento: gerador de dados → regras/modelo → API → dashboard.
+4. Decisão em aberto
+O cenário deve ser cartão/PIX de uma fintech, como assumido, ou outro, como e-commerce ou banco tradicional? Essa escolha altera várias regras (RN05, RN07, RN08).
